@@ -10,7 +10,9 @@ from keras.models import load_model, Model
 
 
 data = utils.load_array("data/PV/X.bc")
-data = data[:8000]
+data = np.append(data, utils.load_array("data/IBA1/X.bc"), axis=0)
+print("DATA", data.shape)
+#data = data[:8000]
 '''data = data/256
 
 for i in range(len(data)):
@@ -35,7 +37,7 @@ np.save('compressed.npy',intermediate_output)
 print("INTERMEDIATE LAYER", type(intermediate_output), intermediate_output.shape)
 print("INTERMEDIATE LAYER", type(intermediate), intermediate.shape)
 #----------visualize
-num=50
+num=450
 samples=2
 test_data=train_data[num:num+samples]
 #print("test_data Type", type(test_data), test_data.shape)

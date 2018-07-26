@@ -30,7 +30,7 @@ class Autoencoder:
 		inputs = Input((self.img_rows, self.img_cols, self.depth))
 		model = self.createAutoencoder(inputs)
 		model_checkpoint = ModelCheckpoint(self.save_file, monitor='val_loss', verbose=1, save_best_only=True, save_weights_only=True)
-		model.fit(X,X, batch_size=10, epochs=4)
+		model.fit(X,X, batch_size=12, epochs=8)
 
 		return model
 
