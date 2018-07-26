@@ -14,5 +14,5 @@ def normalize(X):
 	
 
 	X = np.reshape(X, (d1,d2,d3,d4))
-	print(X.shape, np.max(X))
+	print(X.shape, np.max(X), np.mean(X))
 	return X
