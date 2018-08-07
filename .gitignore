@@ -2,3 +2,6 @@
 __pycache__
 examples
 images
+.vscode
+env
+*.h5

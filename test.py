@@ -6,6 +6,6 @@ def test(num,data):
 	test = np.zeros((32,32,2))
 	num = num
 	first = read_channel(data, num, 0)
-	sec = read_channel(data,num,1)
+	sec = read_channel(data,num,0)
 	
 	return (first,sec)
