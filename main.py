@@ -9,22 +9,36 @@ from visualize import visualize
 from keras.models import load_model, Model
 
 
-data = utils.load_array("data/PV/X.bc")
-data = np.append(data, utils.load_array("data/IBA1/X.bc"), axis=0)
-print("DATA", data.shape)
+data_both_channels = utils.load_array("data/PV/X.bc")
+data_both_channels = data_both_channels[:3000]
+'''temp = np.moveaxis(data_both_channels,-1,1)
+data = np.zeros((data_both_channels.shape[0], 1, data_both_channels.shape[1], data_both_channels.shape[2]))
+#data = np.append(data, utils.load_array("data/IBA1/X.bc"), axis=0)
+#print("DATA", data.shape)
 #data = data[:8000]
-'''data = data/256
-
+'''
+'''
 for i in range(len(data)):
 	img1,img2  = test(i, data)
 	img1 = cv2.medianBlur(img1, 2)
-	img2 = cv2.medianBlur(img2, 2)'''
+	img2 = cv2.medianBlur(img2, 2)
+
+for i in range(len(data_both_channels)):
+	nucl, cells = test(i, data_both_channels)
+	
+	data[i][0] = temp[i][1]
+
+data=np.moveaxis(data,1,-1)
+np.save("cells_PV.npy", data)'''
+data = np.load("cells_PV.npy")
+data = data[:3000]
+#data=np.moveaxis(data,-1,1)
 
 train_data = normalize(data)
 print(np.max(data), type(data), data.shape)
-ae = Autoencoder(save_file='weights.hdf5')
+ae = Autoencoder(save_file='weights.hdf5', depth=1)
 model = ae.train(train_data)
-model.save('bestModel.h5')
+model.save('bestModel_both.h5')
 
 #----------get output from latent space
 
@@ -34,10 +48,8 @@ intermediate_layer_model = Model(inputs=model.input,
 intermediate_output = intermediate_layer_model.predict(data)
 intermediate = intermediate_output[30]
 np.save('compressed.npy',intermediate_output)
-print("INTERMEDIATE LAYER", type(intermediate_output), intermediate_output.shape)
-print("INTERMEDIATE LAYER", type(intermediate), intermediate.shape)
-#----------visualize
-num=450
+
+num=2000
 samples=2
 test_data=train_data[num:num+samples]
 #print("test_data Type", type(test_data), test_data.shape)
