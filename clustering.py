@@ -95,10 +95,11 @@ print("PURPLE AND YELLOW", purple.shape, yellow.shape)
 
 '''X, y_true = make_blobs(n_samples=len(compressed), centers=2,
                        cluster_std=0.60, random_state=0, )'''
-plt.scatter(compressed[:,0], compressed[:,1], cmap='viridis', c = labels)
+
+#plt.scatter(compressed[:,0], compressed[:,1], cmap='viridis', c = labels)
 print('SHAPE', compressed.shape)
-#plt.scatter(yellow[:,0], yellow[:,1], cmap='viridis', c = 'green', zorder=1)
-#plt.scatter(purple[:,0], purple[:,1], cmap='viridis', c = 'red',zorder=2)
+plt.scatter(yellow[:,0], yellow[:,1], cmap='viridis', c = 'green', zorder=1)
+plt.scatter(purple[:,0], purple[:,1], cmap='viridis', c = 'red',zorder=2)
 plt.plot()
 plt.show()
 #REDUCING WITH TSNES
@@ -108,7 +109,7 @@ print(kmeans.shape)
 print(np.min(kmeans))
 print(kmeans)'''
 counter = 0
-counterTrue=0
+counterTrue=0	
 counterFalse=0
 falsePositive=0
 falseNegative=0
@@ -134,3 +135,4 @@ print("falsePositive", falsePositive)
 print("falseNegative", falseNegative)
 cluster1 = np.argmin(labels)
 cluster2 = np.argmax(labels)
+

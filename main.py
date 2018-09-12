@@ -8,49 +8,48 @@ from extractData import read_channel
 from visualize import visualize
 from keras.models import load_model, Model
 
+## Set GPU using tf 
+import tensorflow as tf 
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+config.gpu_options.per_process_gpu_memory_fraction = 0.85 # you can set this value to be anything really
+from keras.backend.tensorflow_backend import set_session
+set_session(tf.Session(config=config))
 
-data_both_channels = utils.load_array("data/PV/X.bc")
-data_both_channels = data_both_channels[:3000]
+#data = utils.load_array("data/PV/X.bc")
+#data_both_channels = data_both_channels[:10]
 '''temp = np.moveaxis(data_both_channels,-1,1)
 data = np.zeros((data_both_channels.shape[0], 1, data_both_channels.shape[1], data_both_channels.shape[2]))
-#data = np.append(data, utils.load_array("data/IBA1/X.bc"), axis=0)
-#print("DATA", data.shape)
-#data = data[:8000]
-'''
-'''
-for i in range(len(data)):
-	img1,img2  = test(i, data)
-	img1 = cv2.medianBlur(img1, 2)
-	img2 = cv2.medianBlur(img2, 2)
-
 for i in range(len(data_both_channels)):
 	nucl, cells = test(i, data_both_channels)
 	
 	data[i][0] = temp[i][1]
-
 data=np.moveaxis(data,1,-1)
 np.save("cells_PV.npy", data)'''
 data = np.load("cells_PV.npy")
-data = data[:3000]
-#data=np.moveaxis(data,-1,1)
-
+#data = data[:1000]
 train_data = normalize(data)
 print(np.max(data), type(data), data.shape)
-ae = Autoencoder(save_file='weights.hdf5', depth=1)
+ae = Autoencoder(save_file='weights-batviktor2.hdf5', depth=1)
+print("SDFDSFDSFDSFDSDFS")
 model = ae.train(train_data)
-model.save('bestModel_both.h5')
+#model.save('bestModel-batviktor2mix.h5')
 
 #----------get output from latent space
 
 layer_name = 'latent_space'
 intermediate_layer_model = Model(inputs=model.input,
                                  outputs=model.get_layer(layer_name).output)
-intermediate_output = intermediate_layer_model.predict(data)
+intermediate_output = intermediate_layer_model.predict(train_data)
 intermediate = intermediate_output[30]
-np.save('compressed.npy',intermediate_output)
-
-num=2000
-samples=2
+print(type(intermediate_output), intermediate_output.shape)
+print(type(intermediate_layer_model))
+np.save('compressed12.npy',intermediate_output)
+print("INTERMEDIATE LAYER", type(intermediate_output), intermediate_output.shape)
+print("INTERMEDIATE LAYER", type(intermediate), intermediate.shape)
+#----------visualize
+num=700
+samples=3
 test_data=train_data[num:num+samples]
 #print("test_data Type", type(test_data), test_data.shape)
 res = model.predict(test_data)
@@ -94,5 +93,3 @@ for j in gd_imgs:
 	counter+=1
 	
 cv2.waitKey()
-
-
