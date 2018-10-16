@@ -6,37 +6,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns; sns.set()  # for plot styling
 from sklearn.datasets.samples_generator import make_blobs
 
-#-------------read and write postivie indices
-'''
-nuclei_centers_PV = np.load('data/PV/nuclei_centers.npy')
-ground_truth_PV = np.load('data/PV/ground_truth.npy')
-
-print('GROUND TRUTH', ground_truth_PV[5])
-positives_idx = list()
-last_stop = 0
-for center in nuclei_centers_PV:
-	for i in range(last_stop, len(ground_truth_PV)):
-
-		if np.array_equal(center, ground_truth_PV[i]):
-			positives_idx.append(i)
-			stop=i
-
-nuclei_centers_IBA = np.load('data/IBA1/nuclei_centers.npy')
-ground_truth_IBA = np.load('data/IBA1/ground_truth.npy')
-
-last_stop = 0
-for center in nuclei_centers_IBA:
-	for i in range(last_stop, len(ground_truth_IBA)):
-
-		if np.array_equal(center, ground_truth_IBA[i]):
-			positives_idx.append(len(nuclei_centers_PV)+i)
-			stop=i
-
-print("POSITIVES_IDX", len(positives_idx), len(ground_truth_PV)+len(ground_truth_IBA))
-indices = np.array(positives_idx)
-np.save('positive_indices.npy',indices)
-'''
-
 
 compressed = np.load('compressed12.npy')
 positive = np.load('positive_indices.npy')
@@ -101,19 +70,14 @@ plt.scatter(yellow[:,0], yellow[:,1], cmap='viridis', c = 'green', zorder=1)
 plt.scatter(purple[:,0], purple[:,1], cmap='viridis', c = 'red',zorder=2)
 plt.plot()
 plt.show()
-#REDUCING WITH TSNES
-'''X_embedded = TSNE(n_components=2).fit_transform(compressed)
-print("SHAPE AND TYOE", type(X_embedded), X_embedded.shape)
-print(kmeans.shape)
-print(np.min(kmeans))
-print(kmeans)'''
+
 counter = 0
 counterTrue=0
 for i in range(len(labels)):
 	if labels[i] == 1:
 		counter+=1
-    if labels[i]==1 and labels_pos[i]==1:
-        counterTrue+=1
+	if labels[i]==1 and labels_pos[i]==1:
+		counterTrue+=1
 
 print("COUNTER", counter, counterTrue)
 cluster1 = np.argmin(labels)
