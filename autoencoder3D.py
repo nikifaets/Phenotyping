@@ -1,3 +1,5 @@
+import plaidml.keras
+plaidml.keras.install_backend()
 from keras.layers import Conv3D, MaxPooling3D, Conv2D, MaxPooling2D, Input, UpSampling2D
 from keras.models import Model
 from keras import optimizers
@@ -9,7 +11,7 @@ import networks
 
 class Autoencoder:
 
-	def __init__(self, save_file, img_rows=32, img_cols=32, depth=2):
+	def __init__(self, save_file, img_rows=32, img_cols=32, depth=1):
 
 		self.img_cols = img_cols
 		self.img_rows = img_rows
@@ -19,7 +21,7 @@ class Autoencoder:
 
 	def createAutoencoder(self,inputs):
 
-		decoder = networks.basicDenoiser(inputs)
+		decoder = networks.cellChannel1(inputs)
 		model = Model(inputs, decoder)
 
 		rmsprop = optimizers.RMSprop(lr=1e-3, rho=0.9, epsilon=None, decay=0.0)
@@ -34,7 +36,8 @@ class Autoencoder:
 		inputs = Input((self.img_rows, self.img_cols, self.depth))
 		model = self.createAutoencoder(inputs)
 		model_checkpoint = ModelCheckpoint(self.save_file, monitor='val_loss', verbose=1, save_best_only=True, save_weights_only=True)
-		model.fit(X,X, batch_size=25, epochs=15)
+
+		model.fit(X,X, batch_size=25, epochs=1)
 		return model
 
 	def predict(self, datas):
