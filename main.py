@@ -19,24 +19,9 @@ from keras import backend
 #from keras.backend.tensorflow_backend import set_session
 #set_session(tf.Session(config=config))
 
-<<<<<<< HEAD
-#data = utils.load_array("data/PV/X.bc")
-#data_both_channels = data_both_channels[:10]
-'''temp = np.moveaxis(data_both_channels,-1,1)
-data = np.zeros((data_both_channels.shape[0], 1, data_both_channels.shape[1], data_both_channels.shape[2]))
-for i in range(len(data_both_channels)):
-	nucl, cells = test(i, data_both_channels)
-	
-	data[i][0] = temp[i][1]
-data=np.moveaxis(data,1,-1)
-np.save("cells_PV.npy", data)'''
-data = np.load("cells_PV.npy")
-#data = data[:1000]
-=======
 data_pv = utils.load_array("data/PV/X_nucleus.bc")
 
 data = data_pv[:8000]
->>>>>>> 518b64dc0ff25475924c07731194b76e9266aa4a
 train_data = normalize(data)
 print("data range", np.min(train_data), np.max(train_data))
 print(np.max(data), type(data), data.shape)
@@ -55,16 +40,3 @@ np.save('output_PV.npy',intermediate_output)
 visualize.visualize_ae(num=700, samples=3, model=model, data=train_data)
 
 
-<<<<<<< HEAD
-counter = 0
-for j in gd_imgs:
-	gd1,gd2 = j
-	cv2.imshow("ground_truth1_"+str(counter), gd1)
-	cv2.imshow("ground_truth2_"+str(counter), gd2)
-	counter+=1
-	
-cv2.waitKey()
-=======
-
-
->>>>>>> 518b64dc0ff25475924c07731194b76e9266aa4a
