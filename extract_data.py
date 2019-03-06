@@ -47,16 +47,24 @@ def get_positive():
 #-------------read and write postivie indices
 
 	nuclei_centers_PV = np.load('data/PV/nuclei_centers.npy')
-	ground_truth_PV = np.load('data/PV/ground_truth.npy')
+	ground_truth_PV = np.load('positive_indices_PV.npy')
+	print(ground_truth_PV.shape)
 
-	labels = np.zeros(len(nuclei_centers_PV))
+	labels = np.zeros(nuclei_centers_PV.shape[0], np.uint8)
 
-	for i in range(0, len(ground_truth_PV)):
+	for i in range(0, ground_truth_PV.shape[0]):
 
-		labels[ground_truth_PV[i]] == 1
-		print(i)
+		labels[ground_truth_PV[i]] = 1
+		print(np.sum(labels))	
+		#print(i)
 
 	np.save("data/PV/labels.npy", labels)
+
+	counter=0
+	for i in range(0, len(labels)):
+		if labels[i] == 1:
+			counter+=1
+
 
 
 

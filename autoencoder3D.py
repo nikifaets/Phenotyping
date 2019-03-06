@@ -1,5 +1,3 @@
-import plaidml.keras
-plaidml.keras.install_backend()
 from keras.layers import Conv3D, MaxPooling3D, Conv2D, MaxPooling2D, Input, UpSampling2D
 from keras.models import Model
 from keras import optimizers
@@ -21,7 +19,7 @@ class Autoencoder:
 
 	def createAutoencoder(self,inputs):
 
-		decoder = networks.cellChannel1(inputs)
+		decoder = networks.basicDenoiser(inputs)
 		model = Model(inputs, decoder)
 
 		rmsprop = optimizers.RMSprop(lr=1e-3, rho=0.9, epsilon=None, decay=0.0)

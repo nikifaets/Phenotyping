@@ -2,24 +2,33 @@ import numpy as np
 import utils
 
 
-def extract_by_average(data,z, dims=2, save=False):
+def extract_by_average(z, dims=2, save=False):
+
+	z = np.load("z.npy")
+	data = utils.load_array("data/PV/X_nucleus.bc")
+	labels = np.load("data/PV/labels.npy")
+
+	data_new = list()
+	labels_new = list()
 
 	print("IN EXTRACT", data.shape, z.shape)
 	avg = np.average(z)
-	condition = z>=avg
-	z = np.extract(condition, z)
-	size = len(z)
 
-	cleaned = np.empty((size,dims))
+	for i in range(0, len(z)):
+		if z[i] >= avg:
 
-	for i in range(0,dims):
-		cleaned[:,i] = np.extract(condition,data[:,i])
-	
-	print("AFTER CONDITION", cleaned.shape, z.shape)
+			data_new.append(data[i])
+			labels_new.append(labels[i])
+
+	data_new = np.array(data_new)
+	labels_new = np.array(labels_new)
+
+	print(data_new.shape, labels_new.shape)
 
 	if save:
-		np.save(cleaned, save)
-	return cleaned,z
+
+		np.save("data/PV/filtered/PV_X.npy", data_new)
+		np.save("data/PV/filtered/labels.npy", labels_new)
 
 def save_cleaned(initial, new_data, z, positives):
 
@@ -80,3 +89,9 @@ def update_positives(condition, positives):
 
 	print(counter)
 	np.save("cleaned_positive_indices_PV.npy", new_positives)
+
+
+
+z = np.load("z.npy")
+
+extract_by_average(z, save=True)
