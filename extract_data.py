@@ -49,27 +49,14 @@ def get_positive():
 	nuclei_centers_PV = np.load('data/PV/nuclei_centers.npy')
 	ground_truth_PV = np.load('data/PV/ground_truth.npy')
 
-	positives_idx_PV = list()
+	labels = np.zeros(len(nuclei_centers_PV))
 
-	for center in nuclei_centers_PV:
-		for i in range(0, len(ground_truth_PV)):
+	for i in range(0, len(ground_truth_PV)):
 
-			if np.array_equal(center, ground_truth_PV[i]):
-				positives_idx_PV.append(i)
+		labels[ground_truth_PV[i]] == 1
+		print(i)
 
-
-	nuclei_centers_IBA = np.load('data/IBA1/nuclei_centers.npy')
-	ground_truth_IBA = np.load('data/IBA1/ground_truth.npy')
-	positives_idx_IBA = list()
+	np.save("data/PV/labels.npy", labels)
 
 
-	for center in nuclei_centers_IBA:
-		for i in range(0, len(ground_truth_IBA)):
 
-			if np.array_equal(center, ground_truth_IBA[i]):
-				positives_idx_IBA.append(i)
-
-	indices_PV = np.array(positives_idx_PV)
-	indices_IBA = np.array(positives_idx_IBA)
-	np.save('positive_indices_PV.npy',indices_PV)
-	np.save('positive_indices_IBA1.npy', indices_IBA)

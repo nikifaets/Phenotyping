@@ -10,6 +10,7 @@ from sklearn.datasets.samples_generator import make_blobs
 compressed = np.load('compressed12.npy')
 positive = np.load('positive_indices.npy')
 positive_PV = np.load('data/PV/ground_truth.npy')
+labels = np.load("data/PV/labels.npy")
 
 print(compressed.shape)
 compressed = np.reshape(compressed, (compressed.shape[0], compressed.shape[-1]*compressed.shape[1]*compressed.shape[2]))
