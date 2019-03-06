@@ -8,9 +8,9 @@ from sklearn.datasets.samples_generator import make_blobs
 
 
 compressed = np.load('compressed12.npy')
-positive = np.load('positive_indices.npy')
+positive = np.load('positive_indices_PV.npy')
 positive_PV = np.load('data/PV/ground_truth.npy')
-labels = np.load("data/PV/labels.npy")
+labels_pv = np.load("data/PV/labels.npy")
 
 print(compressed.shape)
 compressed = np.reshape(compressed, (compressed.shape[0], compressed.shape[-1]*compressed.shape[1]*compressed.shape[2]))
@@ -59,7 +59,7 @@ for i in range(len(labels_pos)):
 purple = np.array(purple)
 yellow = np.array(yellow)
 labels_purple = np.array(labels_purple)
-labels_yellow = np.array(labels_yellow)
+labels_yellow = np.array(labels_yellow)	
 print("PURPLE AND YELLOW", purple.shape, yellow.shape)
 #VISUALIZATION
 
@@ -68,8 +68,12 @@ print("PURPLE AND YELLOW", purple.shape, yellow.shape)
 
 #plt.scatter(compressed[:,0], compressed[:,1], cmap='viridis', c = labels)
 print('SHAPE', compressed.shape)
-plt.scatter(yellow[:,0], yellow[:,1], cmap='viridis', c = 'green', zorder=1)
-plt.scatter(purple[:,0], purple[:,1], cmap='viridis', c = 'red',zorder=2)
+#plt.scatter(yellow[:,0], yellow[:,1], cmap='viridis', c = 'green', zorder=1)
+#plt.scatter(purple[:,0], purple[:,1], cmap='viridis', c = 'red',zorder=2)
+labels_pv+=1
+labels_pv = labels_pv*100
+
+plt.scatter(compressed[:,0], compressed[:,1], cmap=labels_pv)
 plt.plot()
 plt.show()
 
