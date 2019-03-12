@@ -24,7 +24,7 @@ class Autoencoder:
 
 		rmsprop = optimizers.RMSprop(lr=1e-3, rho=0.9, epsilon=None, decay=0.0)
 
-		model.compile(optimizer='adam', loss='mean_squared_error')
+		model.compile(optimizer='adam', loss='binary_crossentropy')
 		model.summary()
 
 		return model
@@ -35,7 +35,7 @@ class Autoencoder:
 		model = self.createAutoencoder(inputs)
 		model_checkpoint = ModelCheckpoint(self.save_file, monitor='val_loss', verbose=1, save_best_only=True, save_weights_only=True)
 
-		model.fit(X,X, batch_size=25, epochs=1)
+		model.fit(X,X, batch_size=25, epochs=30)
 		return model
 
 	def predict(self, datas):

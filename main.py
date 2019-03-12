@@ -1,6 +1,5 @@
 import utils
 from normalize import normalize
-import visualize
 import numpy as np
 from autoencoder3D import Autoencoder
 import extract_data as extr
@@ -8,7 +7,7 @@ import keras
 from get_samples import get_samples
 import cv2
 from extract_data import read_channel
-from keras.models import load_model, Model
+from keras.models import load_model, Model, model_from_json
 from keras import backend
 
 ## Set GPU using tf 
@@ -19,10 +18,9 @@ from keras import backend
 #from keras.backend.tensorflow_backend import set_session
 #set_session(tf.Session(config=config))
 
-data_pv = utils.load_array("data/PV/X_nucleus.bc")
+data = utils.load_array("data/PV/X_nucleus.bc")[:2000]
 
-data = data_pv[:8000]
-train_data = normalize(data)
+train_data = data/(256*256)
 print("data range", np.min(train_data), np.max(train_data))
 print(np.max(data), type(data), data.shape)
 ae = Autoencoder(save_file='weights-batviktor2.hdf5', depth=1)
@@ -37,7 +35,6 @@ intermediate_output = intermediate_layer_model.predict(train_data)
 np.save('output_PV.npy',intermediate_output)
 
 #----------visualize
-visualize.visualize_ae(num=700, samples=3, model=model, data=train_data)
 
 model_json = model.to_json()
 with open("model.json", "w") as json_file:

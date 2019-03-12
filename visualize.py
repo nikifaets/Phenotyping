@@ -1,7 +1,10 @@
+import utils
 import numpy as np
 import matplotlib.pyplot as plt
 from get_samples import get_samples
 from normalize import normalize 
+from keras.models import model_from_json
+from extract_data import read_channel
 import cv2
 
 def visualize(test_imgs, gt_imgs):
@@ -19,24 +22,43 @@ def visualize(test_imgs, gt_imgs):
 	    plt.imshow(cell2)
 	plt.show()
 
-def visualize_ae(num, samples, model, data):
+def visualize_ae(predicted, data, start_idx, samples):
 
 	
-	test_data=data[num:num+samples]
-	test_data = normalize(test_data)
-	res = model.predict(test_data)
-	print("range res", np.min(res), np.max(res))
-	res*=255
-	data+=0.5
-	data*=255
+	#predicted = normalize(predicted)
+	#data = normalize(data)
+	
+	print("range predicted", np.min(predicted), np.max(predicted))
+	print("range data", np.min(data), np.max(data))
 
-	for layer in range(0,min(36,intermediate_output[output].shape[-1])):
 
-		img = read_channel(intermediate_output, output, layer, shape=3, dim=intermediate_output.shape[1]).astype(np.uint8)
-		plt.subplot(6,6, 1+layer)
+
+	for i in range(0,samples):
+
+		img_processed = read_channel(predicted, i, layer=0, shape=3, dim=predicted.shape[1])
+		img = read_channel(data, i, layer=0, shape=3, dim=data.shape[1])
+		plt.subplot(samples, 2, 1+i)
 		plt.imshow(img.reshape(img.shape[0],img.shape[1]), cmap=plt.get_cmap('gray'))
+		plt.subplot(samples, 2, 1+5+i)
 
-	#plt.show()
+		plt.imshow(img_processed.reshape(img_processed.shape[0],img_processed.shape[1]), cmap=plt.get_cmap('gray'))
+
+	plt.show()
 	
 	
+data = utils.load_array("data/PV/X_nucleus.bc")/(256)
 
+json_file = open('model.json', 'r')
+loaded_model_json = json_file.read()
+json_file.close()
+loaded_model = model_from_json(loaded_model_json)
+# load weights into new model
+loaded_model.load_weights("model.h5")
+
+samples = 5
+start_idx = 700
+predicted = loaded_model.predict(data[start_idx:start_idx+samples])*256
+
+print("range predicted", np.min(predicted), np.max(predicted))
+print("range data", np.min(data), np.max(data))
+visualize_ae(predicted, data, start_idx, samples)

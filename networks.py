@@ -270,17 +270,14 @@ def basicDenoiser(input_img):
 	encoded = Conv2D(16, (2, 2), activation='relu', padding='same')(encoded)
 	encoded = MaxPooling2D(pool_size=(2, 2))(encoded)
 	encoded = Conv2D(32, (2, 2), activation='relu', padding='same')(encoded)
-	encoded = MaxPooling2D(pool_size=(2, 2))(encoded)
-	encoded = Conv2D(32, (2, 2), activation='relu', padding='same')(encoded)
+	encoded = Conv2D(8, (2, 2), activation='relu', padding='same')(encoded)
 	encoded = Conv2D(2, (2, 2), activation='relu', padding='same', name='latent_space')(encoded)
 
     #decoder
-    
-	decoded = Conv2D(32, (2, 2), activation='relu', padding='same')(encoded)
-	decoded = UpSampling2D((2,2))(decoded)
+	decoded = Conv2D(8, (2, 2), activation='relu', padding='same')(encoded)
 	decoded = Conv2D(32, (2, 2), activation='relu', padding='same')(decoded)
 	decoded = UpSampling2D((2,2))(decoded)
 	decoded = Conv2D(16, (2, 2), activation='relu', padding='same')(decoded)
 	decoded = UpSampling2D((2,2))(decoded)
-	decoded = Conv2D(1, (2, 2), activation='relu', padding='same')(decoded)
+	decoded = Conv2D(1, (2, 2), activation='tanh', padding='same')(decoded)
 	return decoded
