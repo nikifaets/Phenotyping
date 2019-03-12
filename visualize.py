@@ -21,8 +21,7 @@ def visualize(test_imgs, gt_imgs):
 
 def visualize_ae(num, samples, model, data):
 
-	num=700
-	samples=3	
+	
 	test_data=data[num:num+samples]
 	test_data = normalize(test_data)
 	res = model.predict(test_data)
@@ -30,5 +29,14 @@ def visualize_ae(num, samples, model, data):
 	res*=255
 	data+=0.5
 	data*=255
+
+	for layer in range(0,min(36,intermediate_output[output].shape[-1])):
+
+		img = read_channel(intermediate_output, output, layer, shape=3, dim=intermediate_output.shape[1]).astype(np.uint8)
+		plt.subplot(6,6, 1+layer)
+		plt.imshow(img.reshape(img.shape[0],img.shape[1]), cmap=plt.get_cmap('gray'))
+
+	#plt.show()
 	
 	
+

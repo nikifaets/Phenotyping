@@ -39,4 +39,11 @@ np.save('output_PV.npy',intermediate_output)
 #----------visualize
 visualize.visualize_ae(num=700, samples=3, model=model, data=train_data)
 
+model_json = model.to_json()
+with open("model.json", "w") as json_file:
+    json_file.write(model_json)
+
+model.save_weights("model.h5")
+print("Saved model to disk")
+
 
