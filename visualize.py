@@ -46,19 +46,25 @@ def visualize_ae(predicted, data, start_idx, samples):
 	plt.show()
 	
 	
-data = utils.load_array("data/PV/X_nucleus.bc")/(256)
+data = utils.load_array("data/PV/X_nucleus.bc")/(256*256)
 
 json_file = open('model.json', 'r')
 loaded_model_json = json_file.read()
 json_file.close()
 loaded_model = model_from_json(loaded_model_json)
-# load weights into new model
 loaded_model.load_weights("model.h5")
 
 samples = 5
-start_idx = 700
-predicted = loaded_model.predict(data[start_idx:start_idx+samples])*256
+start_idx = 205
+
+
+predicted = loaded_model.predict(data[start_idx:start_idx+samples])
+
+data*=256
+
+predicted += (0-predicted.min())
+predicted = predicted*(256/predicted.max())
 
 print("range predicted", np.min(predicted), np.max(predicted))
 print("range data", np.min(data), np.max(data))
-visualize_ae(predicted, data, start_idx, samples)
+visualize_ae(predicted, data[start_idx:start_idx+samples], start_idx, samples)

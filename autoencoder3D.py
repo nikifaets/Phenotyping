@@ -35,7 +35,7 @@ class Autoencoder:
 		model = self.createAutoencoder(inputs)
 		model_checkpoint = ModelCheckpoint(self.save_file, monitor='val_loss', verbose=1, save_best_only=True, save_weights_only=True)
 
-		model.fit(X,X, batch_size=25, epochs=30)
+		model.fit(X,X, batch_size=60, epochs=25)
 		return model
 
 	def predict(self, datas):

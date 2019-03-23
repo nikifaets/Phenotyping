@@ -20,12 +20,13 @@ from keras import backend
 
 data = utils.load_array("data/PV/X_nucleus.bc")[:2000]
 
-train_data = data/(256*256)
+train_data = normalize(data/(256))
+train_data = train_data/np.max(train_data)
+
 print("data range", np.min(train_data), np.max(train_data))
 print(np.max(data), type(data), data.shape)
 ae = Autoencoder(save_file='weights-batviktor2.hdf5', depth=1)
 model = ae.train(train_data)
-res = model.predict(train_data)
 
 #----------get output from latent space
 layer_name = 'latent_space'
@@ -33,8 +34,6 @@ intermediate_layer_model = Model(inputs=model.input,
                                  outputs=model.get_layer(layer_name).output)
 intermediate_output = intermediate_layer_model.predict(train_data)
 np.save('output_PV.npy',intermediate_output)
-
-#----------visualize
 
 model_json = model.to_json()
 with open("model.json", "w") as json_file:

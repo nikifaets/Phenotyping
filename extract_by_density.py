@@ -24,6 +24,7 @@ def extract_by_average(z, dims=2, save=False):
 	labels_new = np.array(labels_new)
 
 	print(data_new.shape, labels_new.shape)
+	print(labels_new.sum())
 
 	if save:
 

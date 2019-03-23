@@ -1,56 +1,97 @@
 import numpy as np 
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans, DBSCAN, MeanShift, AgglomerativeClustering
 from sklearn.manifold import TSNE
 from sklearn.decomposition import IncrementalPCA
 import matplotlib.pyplot as plt
 import seaborn as sns; sns.set()  # for plot styling
 from sklearn.datasets.samples_generator import make_blobs
 from scipy.stats import gaussian_kde
+import utils
 
 
-compressed = np.load('compressed12.npy')
+def clusterKmeans(data):
 
+	dbscan = DBSCAN()
+
+	kmeans = KMeans(n_clusters=2, random_state=0)
+	labels = kmeans.fit_predict(compressed)
+
+	return labels
+
+def clusterDBSCAN(data):
+
+	dbscan = DBSCAN(eps=2, min_samples=200)
+	labels = dbscan.fit_predict(data)
+
+	return labels
+
+def clusterMeanShift(data):
+
+	mshift = MeanShift()
+	labels = mshift.fit_predict(data)
+
+	return labels
+
+def clusterAgglomerativeClustering(data):
+
+	aggl = AgglomerativeClustering(n_clusters=2, linkage='complete')
+	labels = aggl.fit_predict(data)
+
+	return labels
+
+def performPCA(data, n_components):
+
+	ipca = IncrementalPCA(n_components=n_components, batch_size=n_components)
+	ipca.fit(data)
+	data = ipca.fit_transform(data)
+
+	return data
+
+def performTSne(data, n_components):
+
+	tsne = TSNE(n_components=n_components)
+	data = tsne.fit_transform(data)
+
+	return data
+
+compressed = np.load('output_PV.npy')[:4000]
+#compressed = utils.load_array("data/PV/X_nucleus.bc")
 labels_truth = np.load("data/PV/labels.npy")[:len(compressed)]
 
 print(compressed.shape)
 compressed = np.reshape(compressed, (compressed.shape[0], compressed.shape[-1]*compressed.shape[1]*compressed.shape[2]))
-print(compressed.shape)
-sample = compressed[5]
-kmeans = KMeans(n_clusters=2, random_state=0)
 
+labels = clusterAgglomerativeClustering(compressed)
+compressed = performTSne(compressed,2)
 
-labels = kmeans.fit_predict(compressed)
-
-#REDUCING WITH PCA 
-ipca = IncrementalPCA(n_components=2, batch_size=2)
-ipca.fit(compressed)
-compressed = ipca.transform(compressed)
-print("PCA TYPE AND SHAPE", type(ipca))
-print("INPUT TYPE AND SHAPE", type(compressed), compressed.shape)
-
+print("LABELS NUM", len(labels))
 #VISUALIZATION
 
-plt.figure(1)
-
-print(labels_truth)
-print("SUM", np.sum(labels_truth))
-
 counter=0
-
 color = np.empty((len(labels_truth)), np.float32)
 for i in range (0, len(labels_truth)):
-	if labels_truth[i]==1:
+	if labels_truth[i]==0:
 		counter+=1
 		color[i] = 0.2
 	else:
 		color[i] = 0.8
 
+counter=0
+color_clusters = np.empty((len(labels)), np.float32)
+for i in range (0, len(labels)):
+	if labels[i]==0:
+		counter+=1
+		color_clusters[i] = 0.2
+	else:
+		color_clusters[i] = 0.8
+
 print(counter)
-labels_truth+=1
-labels_truth = labels_truth*100
+
 
 print(labels_truth.shape)
 print(color.shape)
+
+plt.figure(1)
 plt.scatter(compressed[:,0], compressed[:,1], c=color)
 plt.plot()
 
@@ -64,17 +105,14 @@ idx = z_sorted.argsort()
 x, y, z_sorted = compressed[idx][0], compressed[idx][1], z_sorted[idx]
 swapped_compressed = np.swapaxes(swapped_compressed, 0, 1)
 print('SHAPE', swapped_compressed.shape)
-#plt.scatter(swapped_compressed[:,0], swapped_compressed[:,1], cmap='viridis', c = z_sorted, zorder=1)
-#plt.plot()
-'''
-plt.figure(3)
-
-cleaned, z_condition = extr.extract_by_average(compressed, z)
-print(z.shape, cleaned.shape, compressed.shape)
-plt.scatter(cleaned[:,0], cleaned[:,1])
+plt.figure(2)
+plt.scatter(swapped_compressed[:,0], swapped_compressed[:,1], cmap='viridis', c = z_sorted, zorder=1)
 plt.plot()
 
-plt.show()'''
+plt.figure(3)
+plt.scatter(compressed[:,0], compressed[:,1], c=color_clusters)
+plt.plot()
+
 plt.show()
 np.save("z.npy", z)
 
