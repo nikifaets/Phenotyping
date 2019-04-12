@@ -7,6 +7,10 @@ import seaborn as sns; sns.set()  # for plot styling
 from sklearn.datasets.samples_generator import make_blobs
 from scipy.stats import gaussian_kde
 import utils
+from keras.datasets import mnist
+from keras.models import model_from_json, Model
+from normalize import normalize
+
 
 
 def clusterKmeans(data):
@@ -34,7 +38,7 @@ def clusterMeanShift(data):
 
 def clusterAgglomerativeClustering(data):
 
-	aggl = AgglomerativeClustering(n_clusters=2, linkage='complete')
+	aggl = AgglomerativeClustering(n_clusters=10, linkage='complete')
 	labels = aggl.fit_predict(data)
 
 	return labels
@@ -54,14 +58,53 @@ def performTSne(data, n_components):
 
 	return data
 
-compressed = np.load('output_PV.npy')[:4000]
-#compressed = utils.load_array("data/PV/X_nucleus.bc")
-labels_truth = np.load("data/PV/labels.npy")[:len(compressed)]
+def ae_predict(data):
+
+	json_file = open('model.json', 'r')
+	loaded_model_json = json_file.read()
+	json_file.close()
+	loaded_model = model_from_json(loaded_model_json)
+	loaded_model.load_weights("model.h5")
+
+	#----------get output from latent space
+
+	data = normalize(data)
+	layer_name = 'latent_space'
+	intermediate_layer_model = Model(inputs=loaded_model.input,
+	                                 outputs=loaded_model.get_layer(layer_name).output)
+	intermediate_output = intermediate_layer_model.predict(data)
+
+	return intermediate_output
+
+def evaluateClustering(labels_truth, labels):
+
+
+	score = np.zeros((10,10), np.uint8)
+
+	for i in range(0, len(labels_truth)):
+
+		score[labels_truth[i]][labels[i]]+=1
+
+
+	print("EVALUATION:")
+	print(len(labels_truth), len(labels))
+	for i in range(0,10):
+		print(i)
+		print(score[i])
+
+
+
+test_size = 5000
+data = utils.load_array("data/PV/X_nucleus.bc")[:test_size]
+#compressed = np.load("output_PV.npy")[:test_size]
+compressed = ae_predict(data)
+labels_truth = np.load("data/PV/labels.npy")[:test_size]
+
 
 print(compressed.shape)
 compressed = np.reshape(compressed, (compressed.shape[0], compressed.shape[-1]*compressed.shape[1]*compressed.shape[2]))
 
-labels = clusterAgglomerativeClustering(compressed)
+labels = clusterKmeans(compressed)
 compressed = performTSne(compressed,2)
 
 print("LABELS NUM", len(labels))
@@ -70,20 +113,14 @@ print("LABELS NUM", len(labels))
 counter=0
 color = np.empty((len(labels_truth)), np.float32)
 for i in range (0, len(labels_truth)):
-	if labels_truth[i]==0:
-		counter+=1
-		color[i] = 0.2
-	else:
-		color[i] = 0.8
+	
+	color[i] = labels_truth[i]*0.1
 
 counter=0
 color_clusters = np.empty((len(labels)), np.float32)
 for i in range (0, len(labels)):
-	if labels[i]==0:
-		counter+=1
-		color_clusters[i] = 0.2
-	else:
-		color_clusters[i] = 0.8
+		color_clusters[i] = labels[i]*0.1
+
 
 print(counter)
 
@@ -142,3 +179,5 @@ print("True Positive", truePositive)
 print("False Positive", falsePositive)
 print("True Negative", trueNegative)
 print("False Negative", falseNegative)
+
+evaluateClustering(labels_truth, labels)
