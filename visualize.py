@@ -46,7 +46,7 @@ def visualize_ae(predicted, data, start_idx, samples):
 	plt.show()
 	
 	
-data = utils.load_array("data/PV/X_nucleus.bc")/(256*256)
+data = utils.load_array("data/PV/X.bc")/(256*256)
 
 json_file = open('model.json', 'r')
 loaded_model_json = json_file.read()
@@ -55,8 +55,7 @@ loaded_model = model_from_json(loaded_model_json)
 loaded_model.load_weights("model.h5")
 
 samples = 5
-start_idx = 205
-
+start_idx = 500
 
 predicted = loaded_model.predict(data[start_idx:start_idx+samples])
 

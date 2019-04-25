@@ -94,8 +94,8 @@ def evaluateClustering(labels_truth, labels):
 
 
 
-test_size = 5000
-data = utils.load_array("data/PV/X_nucleus.bc")[:test_size]
+test_size = 800
+data = utils.load_array("data/PV/X.bc")[:test_size]
 #compressed = np.load("output_PV.npy")[:test_size]
 compressed = ae_predict(data)
 labels_truth = np.load("data/PV/labels.npy")[:test_size]
@@ -114,13 +114,27 @@ counter=0
 color = np.empty((len(labels_truth)), np.float32)
 for i in range (0, len(labels_truth)):
 	
-	color[i] = labels_truth[i]*0.1
+	color[i] = labels_truth[i]*0.4
 
 counter=0
 color_clusters = np.empty((len(labels)), np.float32)
 for i in range (0, len(labels)):
 		color_clusters[i] = labels[i]*0.1
 
+#seperate positive from negative
+condition = labels_truth == 1
+compressed_condition = np.empty((len(condition), compressed.shape[1]))
+
+counter=0
+for i in range(0, len(condition)):
+
+	if condition[i]:
+		compressed_condition[counter] = compressed[i]
+		counter+=1
+#compressed_condition = np.extract(condition, compressed)
+print("CONDITION", condition)
+print("AFTER CONDITION SHAPE", compressed_condition.shape)
+print("OTIGINAL COMPRESSED SHAPE", compressed.shape)
 
 print(counter)
 
@@ -129,7 +143,9 @@ print(labels_truth.shape)
 print(color.shape)
 
 plt.figure(1)
-plt.scatter(compressed[:,0], compressed[:,1], c=color)
+plt.scatter(compressed[:,0], compressed[:,1], c=color, zorder=1)
+#plt.scatter(compressed_condition[:,0], compressed_condition[:,1], c="blue", zorder=1)
+
 plt.plot()
 
 
