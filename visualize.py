@@ -22,7 +22,7 @@ def visualize(test_imgs, gt_imgs):
 	    plt.imshow(cell2)
 	plt.show()
 
-def visualize_ae(predicted, data, start_idx, samples):
+def visualize_ae(data, predicted, start_idx, samples):
 
 	
 	#predicted = normalize(predicted)
@@ -46,7 +46,12 @@ def visualize_ae(predicted, data, start_idx, samples):
 	plt.show()
 	
 	
-data = utils.load_array("data/PV/X.bc")/(256*256)
+#data = utils.load_array("data/PV/X_nucleus.bc")/(256)
+
+data = np.load("data/PV/balanced/PV_split_preprocessed.npy")
+
+test_data = normalize(data/256)
+test_data = test_data/np.max(test_data)
 
 json_file = open('model.json', 'r')
 loaded_model_json = json_file.read()
@@ -55,15 +60,18 @@ loaded_model = model_from_json(loaded_model_json)
 loaded_model.load_weights("model.h5")
 
 samples = 5
-start_idx = 500
+start_idx = 200
 
-predicted = loaded_model.predict(data[start_idx:start_idx+samples])
+print("before predict", test_data.min(), test_data.max())
+predicted = loaded_model.predict(test_data[start_idx:start_idx+samples])
 
-data*=256
+#data*=256
+print("range predicted", np.min(predicted), np.max(predicted))
 
 predicted += (0-predicted.min())
 predicted = predicted*(256/predicted.max())
 
 print("range predicted", np.min(predicted), np.max(predicted))
 print("range data", np.min(data), np.max(data))
-visualize_ae(predicted, data[start_idx:start_idx+samples], start_idx, samples)
+print("shape data", np.shape(data))
+visualize_ae(data[start_idx:start_idx+samples], predicted, start_idx, samples)

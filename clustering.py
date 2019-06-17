@@ -1,7 +1,10 @@
 import numpy as np 
-from sklearn.cluster import KMeans, DBSCAN, MeanShift, AgglomerativeClustering
+from sklearn.cluster import KMeans, DBSCAN, MeanShift, AgglomerativeClustering, AffinityPropagation, Birch
 from sklearn.manifold import TSNE
+from sklearn.ensemble import IsolationForest
 from sklearn.decomposition import IncrementalPCA
+from sklearn.neighbors import LocalOutlierFactor
+from sklearn.svm import OneClassSVM
 import matplotlib.pyplot as plt
 import seaborn as sns; sns.set()  # for plot styling
 from sklearn.datasets.samples_generator import make_blobs
@@ -29,6 +32,13 @@ def clusterDBSCAN(data):
 
 	return labels
 
+def clusterBirch(data):
+
+	birch = Birch(n_clusters=2)
+	labels = birch.fit_predict(data)
+
+	return labels
+
 def clusterMeanShift(data):
 
 	mshift = MeanShift()
@@ -38,9 +48,55 @@ def clusterMeanShift(data):
 
 def clusterAgglomerativeClustering(data):
 
-	aggl = AgglomerativeClustering(n_clusters=10, linkage='complete')
+	aggl = AgglomerativeClustering(n_clusters=2, linkage='single', affinity='euclidean', compute_full_tree=1)
 	labels = aggl.fit_predict(data)
 
+	return labels
+
+def clusterAffinityPropagation(data):
+
+	aff = AffinityPropagation()
+	labels = aff.fit_predict(data)
+
+	return labels
+
+def isolationForest(data, max_samples=50):
+
+	isl = IsolationForest()
+	labels = isl.fit_predict(data)
+
+	for label in labels:
+		if label < 0:
+			label = 0
+
+		if label>0:
+			label = 1
+	return labels
+
+def LOF(data):
+
+	lof = LocalOutlierFactor()
+	labels = lof.fit_predict(data)
+
+	for label in labels:
+		if label < 0:
+			label = 0
+
+		if label>0:
+			label = 1
+	return labels
+
+def SVM(data):
+
+	svm = OneClassSVM()
+	labels = svm.fit_predict(data)
+
+	for label in labels:
+		if label < 0:
+			label = 0
+
+		if label>0:
+			label = 1
 	return labels
 
 def performPCA(data, n_components):
@@ -68,7 +124,9 @@ def ae_predict(data):
 
 	#----------get output from latent space
 
-	data = normalize(data)
+	data = normalize(data/256)
+	data = data/data.max()
+	print("data range", data.min(), data.max())
 	layer_name = 'latent_space'
 	intermediate_layer_model = Model(inputs=loaded_model.input,
 	                                 outputs=loaded_model.get_layer(layer_name).output)
@@ -94,32 +152,52 @@ def evaluateClustering(labels_truth, labels):
 
 
 
-test_size = 800
-data = utils.load_array("data/PV/X.bc")[:test_size]
+data = np.load("data/PV/balanced/PV_split_preprocessed.npy")
+positives = data[:200]
+negatives = data[7000:]
+data = np.concatenate((positives,negatives),axis=0)
+
+#data = utils.load_array("data/PV/X.bc")[:test_size]
 #compressed = np.load("output_PV.npy")[:test_size]
 compressed = ae_predict(data)
-labels_truth = np.load("data/PV/labels.npy")[:test_size]
+#compressed = data
+labels_truth = np.load("data/PV/balanced/labels.npy")
+labels_pos = labels_truth[:200]
+labels_neg = labels_truth[7000:]
+labels_truth = np.concatenate((labels_pos,labels_neg),axis=0)
 
 
 print(compressed.shape)
 compressed = np.reshape(compressed, (compressed.shape[0], compressed.shape[-1]*compressed.shape[1]*compressed.shape[2]))
 
-labels = clusterKmeans(compressed)
 compressed = performTSne(compressed,2)
+labels = clusterAgglomerativeClustering(compressed)
+
+
 
 print("LABELS NUM", len(labels))
 #VISUALIZATION
 
 counter=0
-color = np.empty((len(labels_truth)), np.float32)
+red = np.array((1,0,0))
+blue = np.array((0,0,1))
+
+color = np.empty((len(labels_truth),3), np.float32)
 for i in range (0, len(labels_truth)):
-	
-	color[i] = labels_truth[i]*0.4
+
+	if labels_truth[i]:
+		color[i] = red
+	else:
+		color[i] = blue	
 
 counter=0
-color_clusters = np.empty((len(labels)), np.float32)
+color_clusters = np.empty((len(labels),3), np.float32)
 for i in range (0, len(labels)):
-		color_clusters[i] = labels[i]*0.1
+
+		if labels[i]:
+			color_clusters[i] = red
+		else:
+			color_clusters[i] = blue
 
 #seperate positive from negative
 condition = labels_truth == 1
@@ -129,7 +207,7 @@ counter=0
 for i in range(0, len(condition)):
 
 	if condition[i]:
-		compressed_condition[counter] = compressed[i]
+		compressed_condition[counter] = compressed[i]	
 		counter+=1
 #compressed_condition = np.extract(condition, compressed)
 print("CONDITION", condition)

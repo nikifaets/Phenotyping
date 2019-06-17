@@ -18,19 +18,18 @@ from keras import backend
 #from keras.backend.tensorflow_backend import set_session
 #set_session(tf.Session(config=config))
 
-data = utils.load_array("data/PV/X.bc")[:600]
+data = np.load("data/PV/balanced/PV_split_preprocessed.npy")[50:10000]
+#data = np.concatenate((data[:50], data[9000:]), axis=0)
+#data = utils.load_array("data/PV/X.bc")[100:10000]
 
 train_data = normalize(data/(256))
 train_data = train_data/np.max(train_data)
-'''noise = np.random.normal(loc=0.5, scale=0.5, size=train_data.shape)
-train_data+=noise
-train_data-=train_data.min()'''
-train_data = train_data/np.max(train_data)
+
 
 
 print("data range", np.min(train_data), np.max(train_data))
 print(np.max(data), type(data), data.shape)
-ae = Autoencoder(save_file='weights-batviktor2.hdf5', depth=2)
+ae = Autoencoder(save_file='weights-batviktor2.hdf5', depth=1)
 model = ae.train(train_data)
 
 #----------get output from latent space

@@ -19,12 +19,12 @@ class Autoencoder:
 
 	def createAutoencoder(self,inputs):
 
-		decoder = networks.basicDenoiser(inputs)
+		decoder = networks.cellChannel1(inputs)
 		model = Model(inputs, decoder)
 
 		rmsprop = optimizers.RMSprop(lr=1e-3, rho=0.9, epsilon=None, decay=0.0)
 
-		model.compile(optimizer='adam', loss='f1_score')
+		model.compile(optimizer='adam', loss='binary_crossentropy')
 		model.summary()
 
 		return model
@@ -35,7 +35,7 @@ class Autoencoder:
 		model = self.createAutoencoder(inputs)
 		model_checkpoint = ModelCheckpoint(self.save_file, monitor='val_loss', verbose=1, save_best_only=True, save_weights_only=True)
 
-		model.fit(X,X, batch_size=30, epochs=120)
+		model.fit(X,X, batch_size=100, epochs=5, shuffle=True)
 		return model
 
 	def predict(self, datas):
