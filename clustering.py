@@ -15,7 +15,6 @@ from keras.models import model_from_json, Model
 from normalize import normalize
 
 
-
 def clusterKmeans(data):
 
 	dbscan = DBSCAN()
@@ -154,7 +153,7 @@ def evaluateClustering(labels_truth, labels):
 
 data = np.load("data/PV/balanced/PV_split_preprocessed.npy")
 positives = data[:200]
-negatives = data[7000:]
+negatives = data[10000:]
 data = np.concatenate((positives,negatives),axis=0)
 
 #data = utils.load_array("data/PV/X.bc")[:test_size]
@@ -163,7 +162,7 @@ compressed = ae_predict(data)
 #compressed = data
 labels_truth = np.load("data/PV/balanced/labels.npy")
 labels_pos = labels_truth[:200]
-labels_neg = labels_truth[7000:]
+labels_neg = labels_truth[10000:]
 labels_truth = np.concatenate((labels_pos,labels_neg),axis=0)
 
 
@@ -209,10 +208,6 @@ for i in range(0, len(condition)):
 	if condition[i]:
 		compressed_condition[counter] = compressed[i]	
 		counter+=1
-#compressed_condition = np.extract(condition, compressed)
-print("CONDITION", condition)
-print("AFTER CONDITION SHAPE", compressed_condition.shape)
-print("OTIGINAL COMPRESSED SHAPE", compressed.shape)
 
 print(counter)
 

@@ -19,7 +19,7 @@ class Autoencoder:
 
 	def createAutoencoder(self,inputs):
 
-		decoder = networks.cellChannel1(inputs)
+		decoder = networks.basicDenoiser(inputs)
 		model = Model(inputs, decoder)
 
 		rmsprop = optimizers.RMSprop(lr=1e-3, rho=0.9, epsilon=None, decay=0.0)
