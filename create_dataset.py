@@ -1,8 +1,9 @@
 import numpy as np  
 import utils 
-import random
 
 def create_dataset(labels, data):
+
+	#reorder the dataset so that positive samples are in the beginning of the array
 
 	used = set()
 	used_in_new = set()
@@ -20,29 +21,29 @@ def create_dataset(labels, data):
 			data_new[counter] = data[i]
 			counter+=1
 
-	# make the $counter first elements in labels True
+	#reorder the array with labels
 	for i in range(0, counter):
 		labels_new[i] = True
 
+	#reorder the array with images
 	filler_new = 0
+
 	for i in range(counter, len(data)):
 
 		if i not in used_in_new:
 			
-			print("haidee")
 			data_new[i] = data[filler_new]
 			filler_new+=1
 		
 
-	#np.save("data/IBA1/balanced/IBA1_split.npy", data_new)
-	np.save("data/PV/balanced/labels.npy", labels_new)
+	#np.save("data/PV/balanced/PV_split.npy")
+	#np.save("data/PV/balanced/labels.npy", labels_new)
 
 	
 
 
 
-data = utils.load_array("data/PV/X_nucleus.bc")
-data_merged = utils.load_array("data/PV/X.bc")
+data = utils.load_array("data/PV/X_cells_only.bc")
 
 labels = np.load("data/PV/labels.npy")
 

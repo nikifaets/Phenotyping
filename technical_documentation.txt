@@ -1,0 +1,44 @@
+
+
+Description of files:
+
+- main.py:
+
+module for training the autoencoder and saving the neural network in a file.
+
+- clustering.py:
+
+loads the neural network and feeds test data into it. Then performs clustering on the latents space's output and evaluates the performance.
+
+
+- create_dataset.py:
+
+reorders the data so that positive samples are in the beginning (both the arrays with labels and images)
+reordered arrays are stored as data/cell-type/balanced/...
+split = only the cell channel
+merged = both channels
+
+These reordered arrays are used for training and testing since they are easier to use.
+
+- extract_data.py:
+
+extracts a single layer from multi-layer data
+
+- bc_to_jpg.py:
+
+converts .npy and .bc files to .jpg (mainly for debugging); applies blur to all images.
+
+- create_labels.py:
+
+makes a binary .npy array where arr[i] = True if the i-th sample in the original .bc files is a positive sample
+
+- autoencoder3D.py:
+
+the Autoencoder class for tuning the network's parameters.
+
+- networks.py:
+
+a bunch of networks for experiments
+
+
+

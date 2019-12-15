@@ -133,33 +133,14 @@ def ae_predict(data):
 
 	return intermediate_output
 
-def evaluateClustering(labels_truth, labels):
-
-
-	score = np.zeros((10,10), np.uint8)
-
-	for i in range(0, len(labels_truth)):
-
-		score[labels_truth[i]][labels[i]]+=1
-
-
-	print("EVALUATION:")
-	print(len(labels_truth), len(labels))
-	for i in range(0,10):
-		print(i)
-		print(score[i])
-
-
 
 data = np.load("data/PV/balanced/PV_split_preprocessed.npy")
 positives = data[:200]
 negatives = data[10000:]
 data = np.concatenate((positives,negatives),axis=0)
 
-#data = utils.load_array("data/PV/X.bc")[:test_size]
-#compressed = np.load("output_PV.npy")[:test_size]
 compressed = ae_predict(data)
-#compressed = data
+
 labels_truth = np.load("data/PV/balanced/labels.npy")
 labels_pos = labels_truth[:200]
 labels_neg = labels_truth[10000:]
@@ -172,10 +153,6 @@ compressed = np.reshape(compressed, (compressed.shape[0], compressed.shape[-1]*c
 compressed = performTSne(compressed,2)
 labels = clusterAgglomerativeClustering(compressed)
 
-
-
-print("LABELS NUM", len(labels))
-#VISUALIZATION
 
 counter=0
 red = np.array((1,0,0))
@@ -198,7 +175,6 @@ for i in range (0, len(labels)):
 		else:
 			color_clusters[i] = blue
 
-#seperate positive from negative
 condition = labels_truth == 1
 compressed_condition = np.empty((len(condition), compressed.shape[1]))
 
@@ -209,35 +185,30 @@ for i in range(0, len(condition)):
 		compressed_condition[counter] = compressed[i]	
 		counter+=1
 
-print(counter)
-
-
-print(labels_truth.shape)
-print(color.shape)
-
+#plot ground truth
 plt.figure(1)
 plt.scatter(compressed[:,0], compressed[:,1], c=color, zorder=1)
-#plt.scatter(compressed_condition[:,0], compressed_condition[:,1], c="blue", zorder=1)
-
 plt.plot()
 
+#plot prediction
+plt.figure(2)
+plt.scatter(compressed[:,0], compressed[:,1], c=color_clusters)
+plt.plot()
 
+#plot density distribution
 swapped_compressed = np.swapaxes(compressed, 1, 0)
-#plt.figure(2)
-# stack cells and non-cells
+
 z = gaussian_kde(swapped_compressed)(swapped_compressed)
 z_sorted = np.copy(z)
 idx = z_sorted.argsort()
 x, y, z_sorted = compressed[idx][0], compressed[idx][1], z_sorted[idx]
 swapped_compressed = np.swapaxes(swapped_compressed, 0, 1)
-print('SHAPE', swapped_compressed.shape)
-plt.figure(2)
+
+plt.figure(3)
 plt.scatter(swapped_compressed[:,0], swapped_compressed[:,1], cmap='viridis', c = z_sorted, zorder=1)
 plt.plot()
 
-plt.figure(3)
-plt.scatter(compressed[:,0], compressed[:,1], c=color_clusters)
-plt.plot()
+
 
 plt.show()
 np.save("z.npy", z)
@@ -269,4 +240,3 @@ print("False Positive", falsePositive)
 print("True Negative", trueNegative)
 print("False Negative", falseNegative)
 
-evaluateClustering(labels_truth, labels)
